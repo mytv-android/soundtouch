@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// 
-/// Sample rate transposer. Changes sample rate by using linear interpolation 
+///
+/// Sample rate transposer. Changes sample rate by using linear interpolation
 /// together with anti-alias filtering (first order interpolation with anti-
 /// alias filtering should be quite adequate for this application)
 ///
@@ -10,10 +10,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date$
+// Last changed  : $Date: 2015-07-26 17:45:48 +0300 (Sun, 26 Jul 2015) $
 // File revision : $Revision: 4 $
 //
-// $Id$
+// $Id: RateTransposer.cpp 225 2015-07-26 14:45:48Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -95,7 +95,7 @@ AAFilter *RateTransposer::getAAFilter()
 
 
 
-// Sets new target iRate. Normal iRate = 1.0, smaller values represent slower 
+// Sets new target iRate. Normal iRate = 1.0, smaller values represent slower
 // iRate, larger faster iRates.
 void RateTransposer::setRate(double newRate)
 {
@@ -104,11 +104,11 @@ void RateTransposer::setRate(double newRate)
     pTransposer->setRate(newRate);
 
     // design a new anti-alias filter
-    if (newRate > 1.0) 
+    if (newRate > 1.0)
     {
         fCutoff = 0.5 / newRate;
-    } 
-    else 
+    }
+    else
     {
         fCutoff = 0.5 * newRate;
     }
@@ -124,14 +124,12 @@ void RateTransposer::putSamples(const SAMPLETYPE *samples, uint nSamples)
 }
 
 
-// Transposes sample rate by applying anti-alias filter to prevent folding. 
+// Transposes sample rate by applying anti-alias filter to prevent folding.
 // Returns amount of samples returned in the "dest" buffer.
 // The maximum amount of samples that can be returned at a time is set by
 // the 'set_returnBuffer_size' function.
 void RateTransposer::processSamples(const SAMPLETYPE *src, uint nSamples)
 {
-    uint count;
-
     if (nSamples == 0) return;
 
     // Store samples to input buffer
@@ -139,16 +137,16 @@ void RateTransposer::processSamples(const SAMPLETYPE *src, uint nSamples)
 
     // If anti-alias filter is turned off, simply transpose without applying
     // the filter
-    if (bUseAAFilter == false) 
+    if (bUseAAFilter == false)
     {
-        count = pTransposer->transpose(outputBuffer, inputBuffer);
+        pTransposer->transpose(outputBuffer, inputBuffer);
         return;
     }
 
     assert(pAAFilter);
 
     // Transpose with anti-alias filter
-    if (pTransposer->rate < 1.0f) 
+    if (pTransposer->rate < 1.0f)
     {
         // If the parameter 'Rate' value is smaller than 1, first transpose
         // the samples and then apply the anti-alias filter to remove aliasing.
@@ -158,8 +156,8 @@ void RateTransposer::processSamples(const SAMPLETYPE *src, uint nSamples)
 
         // Apply the anti-alias filter for transposed samples in midBuffer
         pAAFilter->evaluate(outputBuffer, midBuffer);
-    } 
-    else  
+    }
+    else
     {
         // If the parameter 'Rate' value is larger than 1, first apply the
         // anti-alias filter to remove high frequencies (prevent them from folding
@@ -211,7 +209,7 @@ int RateTransposer::isEmpty() const
 //////////////////////////////////////////////////////////////////////////////
 //
 // TransposerBase - Base class for interpolation
-// 
+//
 
 // static function to set interpolation algorithm
 void TransposerBase::setAlgorithm(TransposerBase::ALGORITHM a)
@@ -220,7 +218,7 @@ void TransposerBase::setAlgorithm(TransposerBase::ALGORITHM a)
 }
 
 
-// Transposes the sample rate of the given samples using linear interpolation. 
+// Transposes the sample rate of the given samples using linear interpolation.
 // Returns the number of samples returned in the "dest" buffer
 int TransposerBase::transpose(FIFOSampleBuffer &dest, FIFOSampleBuffer &src)
 {
@@ -235,11 +233,11 @@ int TransposerBase::transpose(FIFOSampleBuffer &dest, FIFOSampleBuffer &src)
     {
         numOutput = transposeMono(pdest, psrc, numSrcSamples);
     }
-    else if (numChannels == 2) 
+    else if (numChannels == 2)
     {
         numOutput = transposeStereo(pdest, psrc, numSrcSamples);
-    } 
-    else 
+    }
+    else
 #endif // USE_MULTICH_ALWAYS
     {
         assert(numChannels > 0);
