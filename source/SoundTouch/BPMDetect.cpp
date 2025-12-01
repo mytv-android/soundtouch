@@ -310,7 +310,9 @@ void BPMDetect::updateXCorr(int process_samples)
         tmp[i] = hamw[i] * hamw[i] * pBuffer[i];
     }
 
+#ifdef OPENMP
     #pragma omp parallel for
+#endif
     for (offs = windowStart; offs < windowLen; offs ++)
     {
         float sum;
@@ -321,7 +323,7 @@ void BPMDetect::updateXCorr(int process_samples)
         {
             sum += tmp[i] * pBuffer[i + offs];  // scaling the sub-result shouldn't be necessary
         }
-        xcorr[offs] *= xcorr_decay;   // decay 'xcorr' here with suitable time constant.
+        // xcorr[offs] *= xcorr_decay;   // decay 'xcorr' here with suitable time constant.
 
         xcorr[offs] += (float)fabs(sum);
     }
